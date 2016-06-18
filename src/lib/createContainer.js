@@ -128,6 +128,7 @@ module.exports = function (Component, options) {
 				}
 			}
 
+			console.log(_this);
 			assign(_this.variables, nextVariables);
 			var fetchPromise = Container.getAllFragments(_this.variables, optionalFragmentNames);
 
