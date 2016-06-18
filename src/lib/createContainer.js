@@ -34,14 +34,14 @@ module.exports = function (Component, options) {
 			/**
 			 * @returns {Promise}
 			 */
-			getFragment:      function (fragmentName, variables) {
+			getFragment:      function (fragmentName, variables, context) {
 				if (!Container.fragments[fragmentName]) {
 					throw new Error(Component.displayName + " has no '" + fragmentName +"' fragment")
 				}
 
 				variables = assign({}, Container.variables, variables || {});
 
-				var promise = Container.fragments[fragmentName](variables);
+				var promise = Container.fragments[fragmentName](variables, context);
 
 				if (typeof promise === "function" && isRootContainer(Container)) {
 					return promiseProxy.Promise.resolve(promise);
@@ -52,7 +52,7 @@ module.exports = function (Component, options) {
 			/**
 			 * @returns {Promise}
 			 */
-			getAllFragments: function (variables, optionalFragmentNames) {
+			getAllFragments: function (variables, optionalFragmentNames, context) {
 				var promises = [];
 
 				optionalFragmentNames = optionalFragmentNames || [];
@@ -67,7 +67,7 @@ module.exports = function (Component, options) {
 					}
 
 					var promise = Container.getFragment(
-						fragmentName, variables
+						fragmentName, variables, context
 					).then(function (fragmentResult) {
 						return assignProperty({}, fragmentName, fragmentResult);
 					});
@@ -128,9 +128,8 @@ module.exports = function (Component, options) {
 				}
 			}
 
-			console.log(_this);
 			assign(_this.variables, nextVariables);
-			var fetchPromise = Container.getAllFragments(_this.variables, optionalFragmentNames);
+			var fetchPromise = Container.getAllFragments(_this.variables, optionalFragmentNames, _this.context || {});
 
 			fetchPromise.then(function (fetchedFragments) {
 				var deferredFragments = {};
