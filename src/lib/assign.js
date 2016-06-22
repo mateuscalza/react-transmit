@@ -5,4 +5,4 @@
 
 var React = require("./react");
 
-module.exports = React.__spread;
+module.exports = Object.assign || React.__spread;
